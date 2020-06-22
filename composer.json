@@ -1,0 +1,8 @@
+{
+    "require": {
+        "badfarm/zanzara": "^0.2.0",
+        "fabpot/goutte": "^4.0",
+        "vlucas/phpdotenv": "^4.1",
+        "monolog/monolog": "^2.0"
+    }
+}
