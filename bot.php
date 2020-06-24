@@ -41,6 +41,7 @@ function periodicCheck(Zanzara $bot)
 {
     $loop = $bot->getLoop();
 
+    // definition of a periodic timer (checkout more on https://github.com/reactphp/event-loop#addperiodictimer)
     $loop->addPeriodicTimer(10, function ($timer) use ($loop, $bot) {
 
         $bot->getGlobalDataItem("reposToCheck")->then(function ($reposToCheck) use ($bot) {
@@ -53,14 +54,12 @@ function periodicCheck(Zanzara $bot)
                     $edited = true;
                     foreach ($repo["watchers"] as $watcher) {
                         $bot->getTelegram()->sendMessage("stars on ${repoName}: " . $newStars, ["chat_id" => $watcher]);
-
                     }
-
                 }
             }
 
             if ($edited) {
-                $bot->setGlobalData("reposToCheck", $reposToCheck, null);
+                $bot->setGlobalData("reposToCheck", $reposToCheck);
             }
         });
     });
@@ -90,9 +89,9 @@ function getStars($url)
  */
 function getRepoName($url)
 {
-    // telegram doesn't like for example - so it won't display name of repo like zanzara-skeleton
+    // telegram doesn't like for example the character "-" so it won't display name of repo like zanzara-skeleton
     $splitUrl = explode("/", $url);
-    $name =  $splitUrl[count($splitUrl)-2];
+    $name = $splitUrl[count($splitUrl) - 2];
     return $name;
 }
 
@@ -183,7 +182,7 @@ function firstParse(Context $ctx)
             // write into the cache the new reposToCheck array
             $ctx->setGlobalData("reposToCheck", $reposToCheck)->then(function ($result) use ($ctx) {
                 if ($result) {
-                    $ctx->sendMessage("Correctly set in watching");
+                    $ctx->sendMessage("Correctly set in watching list");
                 } else {
                     $ctx->sendMessage("Something went wrong");
                 }
