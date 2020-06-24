@@ -1,5 +1,5 @@
 <p align="center">
-  <img src="https://github.com/badfarm/stargazers-bot/blob/develop/logo.png">
+  <img src="https://github.com/badfarm/stargazers-bot/blob/master/logo.png">
 </p>
 
 
