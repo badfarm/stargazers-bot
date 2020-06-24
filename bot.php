@@ -33,6 +33,18 @@ periodicCheck($bot);
 
 
 /**
+ * Entry point of our but. This handler is fired when a /start message is set to the bot
+ */
+$bot->onCommand('start', function (Context $ctx) use ($bot) {
+    // ask link to the user
+    $ctx->sendMessage('Hi, send me the url of the repository page');
+    // nextStep is used to set handler on conversation state. Now our application know that if a new message arrive the
+    // handler firstParse must be used. In this way we can create conversational bot in an easy way.
+    $ctx->nextStep("firstParse");
+});
+
+
+/**
  * Function that add a periodic timer to the main loop and every 10 seconds check the urls
  * saved in cache. If the stars number is different then it send a message to every users that want to be notified
  *
@@ -96,18 +108,10 @@ function getRepoName($url)
     return $name;
 }
 
-
-/**
- * Entry point of our but. This handler is fired when a /start message is set to the bot
- */
-$bot->onCommand('start', function (Context $ctx) use ($bot) {
-    // ask link to the user
-    $ctx->sendMessage('Hi, send me the url of the stargazer repository page');
-    // nextStep is used to set handler on conversation state. Now our application know that if a new message arrive the
-    // handler firstParse must be used. In this way we can create conversational bot in an easy way.
-    $ctx->nextStep("firstParse");
-});
-
+function parseUrl($url)
+{
+    return $url . "/stargazers";
+}
 
 /**
  * Handler on conversation step
@@ -116,7 +120,8 @@ $bot->onCommand('start', function (Context $ctx) use ($bot) {
 function firstParse(Context $ctx)
 {
     // In this point I know that I asked a link, so the message sent by the user should be a link!
-    $newUrl = $ctx->getMessage()->getText();
+    $newUrl = parseUrl($ctx->getMessage()->getText());
+
     // try to get the stars on the link
     $newStars = getStars($newUrl);
     //get the chatId of the user that sent the url (I will use this chatId to send a message if stars change
@@ -124,7 +129,6 @@ function firstParse(Context $ctx)
 
     if ($newStars) {
         // send to the user the starting stars number
-
         $repoName = getRepoName($newUrl);
 
         $ctx->sendMessage("Starting stars on ${repoName}: " . $newStars);
@@ -135,11 +139,11 @@ function firstParse(Context $ctx)
          *
          *  [
          *    [
-         *      "url" => "https://github.com/badfarm/zanzara/stargazers",
+         *      "url" => "https://github.com/badfarm/zanzara",
          *      "watchers" => [11855858585, 10293838838]
          *    ],
          *    [
-         *      "url" => "https://github.com/badfarm/zanzara-skeleton/stargazers",
+         *      "url" => "https://github.com/badfarm/zanzara-skeleton",
          *      "watchers" => [11855858585]
          *    ]
          *  ]
@@ -196,7 +200,7 @@ function firstParse(Context $ctx)
     } else {
 
         //I can't find any stars on the page so I tell the user to retry.
-        $ctx->sendMessage("can't find stars on page, retry with the stargazer page");
+        $ctx->sendMessage("Can't find stars on page, send only the url of the Github repo");
     }
 }
 
