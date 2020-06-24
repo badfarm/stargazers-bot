@@ -21,6 +21,7 @@ $logger->pushHandler($streamHandler);
 $config = new Config();
 $config->setCacheTtl(null); //persistent
 $config->setLogger($logger);
+$config->setParseMode(Config::PARSE_MODE_HTML);
 
 $bot = new Zanzara($_ENV['BOT_TOKEN'], $config);
 
